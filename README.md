@@ -15,7 +15,9 @@ to install the package
 import "github.com/shubhampathak/go-masscan"
 ```
 
-## Example
+## Example 
+
+File: port.go
 
 ```go
 package port
@@ -29,7 +31,6 @@ import (
 
 var t = time.Now()
 
-//Port Scan arguments for all functions in /vendor/github.com/dean2021/go-masscan/masscan.go
 func Port(c *gin.Context) {
 
 	m := masscan.New()
