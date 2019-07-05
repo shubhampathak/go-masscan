@@ -6,6 +6,7 @@ import (
 	"fmt"
 	"io"
 	"os/exec"
+
 	"github.com/pkg/errors"
 )
 
@@ -17,6 +18,8 @@ type Masscan struct {
 	Rate       string
 	Exclude    string
 	Result     []byte
+	Input      string
+	Output     string
 }
 
 func (m *Masscan) SetSystemPath(systemPath string) {
@@ -34,6 +37,16 @@ func (m *Masscan) SetRanges(ranges string) {
 	m.Ranges = ranges
 }
 
+//Added function for Input list "-iL"
+func (m *Masscan) SetInput(input string) {
+	m.Input = input
+}
+
+//Added function for Output in XML "-oX"
+func (m *Masscan) SetOutput(output string) {
+	m.Output = output
+}
+
 func (m *Masscan) SetRate(rate string) {
 	m.Rate = rate
 }
@@ -41,12 +54,15 @@ func (m *Masscan) SetExclude(exclude string) {
 	m.Exclude = exclude
 }
 
-// Start scanning
+// Run Start scanning
 func (m *Masscan) Run() error {
 	var (
 		cmd        *exec.Cmd
 		outb, errs bytes.Buffer
 	)
+	// if m.SystemPath != "" {
+	// 	m.Args = append(m.Args, m.SystemPath)
+	// }
 	if m.Rate != "" {
 		m.Args = append(m.Args, "--rate")
 		m.Args = append(m.Args, m.Rate)
@@ -63,8 +79,17 @@ func (m *Masscan) Run() error {
 		m.Args = append(m.Args, "--exclude")
 		m.Args = append(m.Args, m.Exclude)
 	}
-	m.Args = append(m.Args, "-oX")
-	m.Args = append(m.Args, "-")
+	if m.Input != "" {
+		m.Args = append(m.Args, "-iL")
+		m.Args = append(m.Args, m.Input)
+	}
+	if m.Output != "" {
+		m.Args = append(m.Args, "-oX")
+		m.Args = append(m.Args, m.Output)
+	}
+	// m.Args = append(m.Args, "-")
+	fmt.Println(m.Args)
+	// cmd = exec.Command("sudo", m.Args...)
 	cmd = exec.Command(m.SystemPath, m.Args...)
 	fmt.Println(cmd.Args)
 	cmd.Stdout = &outb
@@ -117,4 +142,5 @@ func New() *Masscan {
 	return &Masscan{
 		SystemPath: "masscan",
 	}
+
 }
